@@ -7,24 +7,35 @@ def StartServer(addr):
     ServerSocket = socket.create_server(addr)
     return ServerSocket
 
-#Akceptuje polaczenie z serwerem i zwraca nowy socket 
-def AcceptConnection(ServerSocket):
-    ClientConn = ServerSocket.accept()[0]
-    return ClientConn
-#Wiadmosci - watek
-
 
 def ReceiveDataFrom(sClientSocket):
     while True:
         print(sClientSocket.recv(1024))
 
+#Akceptuje polaczenie z serwerem i zwraca nowy socket 
+def AcceptConnection(sServerSocket):
+    ClientConn, ClientAddr = sServerSocket.accept()
+    print ("Connected: ", ClientAddr)
+    ReceiveDataFrom(ClientConn)
+    return 0
+
+
+
+
+
 #Glowna funkcja
 def Main():
     addr = ("", 8080)
+    #Server = threading.Thread(target=StartServer,args=addr)
+    #Server.start()
     Server = StartServer(addr)
-    Client = AcceptConnection(Server)
-    ReceiveDataFrom(Client)
+    #Watek kliencki
+        T1 = threading.Thread(target=AcceptConnection, args=(Server,))
+        T1.start()
+    
 
+
+#Main function init 
 if __name__ == '__main__':
     print("Server version 0.1")
     Main()

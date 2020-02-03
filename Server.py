@@ -2,6 +2,13 @@ import socket
 import threading 
 from Server import threading
 
+#Lista podlaczonych uzyszkodnikow - niby globalna, a nie dziala 
+Users = []
+
+def PrintUsers():
+    for user in Users:
+        print(User)
+
 #Tworzy server socket, ktory bedzie akcepptowal polaczenia
 def StartServer(addr):
     ServerSocket = socket.create_server(addr)
@@ -10,31 +17,41 @@ def StartServer(addr):
 
 def ReceiveDataFrom(sClientSocket):
     while True:
-        print(sClientSocket.recv(1024))
+        data = sClientSocket.recv(1024).decode()
+        print(data)
+        if data == "!":
+            PrintUsers()
+
+#Lista aktualnie podlaczonych numerów
+def AddConnectedUsers(User):
+    Users.append(User) 
 
 #Akceptuje polaczenie z serwerem i zwraca nowy socket 
 def AcceptConnection(sServerSocket):
     ClientConn, ClientAddr = sServerSocket.accept()
     print ("Connected: ", ClientAddr)
+    ClientConn.send(("Welcome to server.".encode()))
+    ClientConn.send(("Provide your ID".encode()))
+    ClientID = ClientConn.recv(1024).decode()
+    print ("Client ID: ", ClientID, " connected.")
+    AddConnectedUsers(ClientID)
     ReceiveDataFrom(ClientConn)
     return 0
-
-
-
 
 
 #Glowna funkcja
 def Main():
     addr = ("", 8080)
-    #Server = threading.Thread(target=StartServer,args=addr)
-    #Server.start()
     Server = StartServer(addr)
     #Watek kliencki
-        T1 = threading.Thread(target=AcceptConnection, args=(Server,))
-        T1.start()
-    
+    Threads = []
+    for i in range(5):
+        thread = threading.Thread(target=AcceptConnection, args=(Server,))
+        Threads.append(thread)
+        thread.start()
 
-
+        
+       
 #Main function init 
 if __name__ == '__main__':
     print("Server version 0.1")
@@ -61,17 +78,6 @@ if __name__ == '__main__':
 
     
 
-
-
-
-#print ("Listuj� liczby z przedia�u"+str(a)+" "+str(b)+" ")
-
-#test = int(input())
-#print (test)
-#if test < 18: print("Malolat!")
-#else: print("Dorosly!")
-#for character in str(test):
-#    print (character)
 
 
 

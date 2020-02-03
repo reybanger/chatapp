@@ -2,9 +2,6 @@ import socket
 import threading 
 from Server import threading
 
-def GetUser():
-    UserNr = input("Podaj swoj numer:\n")
-    return UserNr
 def ConnectToServer(addr):
     s = socket.create_connection(addr)
     return s
@@ -13,11 +10,10 @@ def Messaging_send(Peer):
         Peer.send((input().encode()))
 def Messaging_recv(Peer):
     while True:
-        print(Peer.recv(1024))
+        print(Peer.recv(1024).decode())
 
 def Main():
     addr = ("", 8080)
-    Nr = GetUser()
     Connection = ConnectToServer(addr)
     ReceiveThread = threading.Thread(target=Messaging_recv, args=(Connection,))
     ReceiveThread.start()
@@ -29,7 +25,7 @@ def Main():
 
 #Main function init 
 if __name__ == '__main__':
-    print("Server version 0.2")
+    print("Client version 0.2")
     Main()
     
 

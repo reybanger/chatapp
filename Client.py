@@ -13,14 +13,18 @@ def Messaging_send(Peer):
         Peer.send((input().encode()))
 def Messaging_recv(Peer):
     while True:
-        print(sClientSocket.recv(1024))
+        print(Peer.recv(1024))
 
 def Main():
     addr = ("", 8080)
     Nr = GetUser()
     Connection = ConnectToServer(addr)
-    thread = threading.Thread(target=Messaging_send, args=(Connection,))
-    #thread2 = threading.Thread(target=Messaging_recv, args=(Connection,))
+    ReceiveThread = threading.Thread(target=Messaging_recv, args=(Connection,))
+    ReceiveThread.start()
+    SendThread = threading.Thread(target=Messaging_send, args=(Connection,))
+    SendThread.start()
+    
+    
    
 
 #Main function init 

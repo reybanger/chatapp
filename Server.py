@@ -9,9 +9,10 @@ def StartServer(addr):
 
 
 def ReceiveDataFrom(sClientSocket):
-    sClientSocket.send("Welcome to rcv server".encode())
+    sClientSocket.send(("Welcome to rcv server".encode()))
     while True:
         print(sClientSocket.recv(1024))
+        
         
 
 #Akceptuje polaczenie z serwerem i zwraca nowy socket 
@@ -34,9 +35,6 @@ def Main():
 
         
        
-    
-
-
 #Main function init 
 if __name__ == '__main__':
     print("Server version 0.1")

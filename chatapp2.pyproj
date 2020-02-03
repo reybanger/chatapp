@@ -22,6 +22,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Client.py" />
+    <Compile Include="Raw_client.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Server.py" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />

@@ -1,9 +1,32 @@
 import socket
-print("Client version 0.1")
-addr = ("", 8080)
-s = socket.create_connection(addr)
-while True:
-    s.send((input()).encode())
+import threading 
+from Server import threading
+
+def GetUser():
+    UserNr = input("Podaj swoj numer:\n")
+    return UserNr
+def ConnectToServer(addr):
+    s = socket.create_connection(addr)
+    return s
+def Messaging_send(Peer):
+    while True:
+        Peer.send((input().encode()))
+def Messaging_recv(Peer):
+    while True:
+        print(sClientSocket.recv(1024))
+
+def Main():
+    addr = ("", 8080)
+    Nr = GetUser()
+    Connection = ConnectToServer(addr)
+    thread = threading.Thread(target=Messaging_send, args=(Connection,))
+    #thread2 = threading.Thread(target=Messaging_recv, args=(Connection,))
+   
+
+#Main function init 
+if __name__ == '__main__':
+    print("Server version 0.2")
+    Main()
     
 
 
@@ -26,16 +49,6 @@ while True:
     
 
 
-
-
-#print ("Listuj� liczby z przedia�u"+str(a)+" "+str(b)+" ")
-
-#test = int(input())
-#print (test)
-#if test < 18: print("Malolat!")
-#else: print("Dorosly!")
-#for character in str(test):
-#    print (character)
 
 
 

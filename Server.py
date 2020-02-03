@@ -9,8 +9,10 @@ def StartServer(addr):
 
 
 def ReceiveDataFrom(sClientSocket):
+    sClientSocket.send("Welcome to rcv server".encode())
     while True:
         print(sClientSocket.recv(1024))
+        
 
 #Akceptuje polaczenie z serwerem i zwraca nowy socket 
 def AcceptConnection(sServerSocket):
@@ -20,18 +22,18 @@ def AcceptConnection(sServerSocket):
     return 0
 
 
-
-
-
 #Glowna funkcja
 def Main():
     addr = ("", 8080)
-    #Server = threading.Thread(target=StartServer,args=addr)
-    #Server.start()
     Server = StartServer(addr)
     #Watek kliencki
-        T1 = threading.Thread(target=AcceptConnection, args=(Server,))
-        T1.start()
+    Threads = []
+    thread = threading.Thread(target=AcceptConnection, args=(Server,))
+    Threads.append(thread)
+    thread.start()
+
+        
+       
     
 
 

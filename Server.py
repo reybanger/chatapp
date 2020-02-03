@@ -11,7 +11,8 @@ def StartServer(addr):
 def ReceiveDataFrom(sClientSocket):
     sClientSocket.send(("Welcome to rcv server".encode()))
     while True:
-        print(sClientSocket.recv(1024))
+        data = sClientSocket.recv(1024)
+        print(data)
         
         
 
@@ -29,9 +30,10 @@ def Main():
     Server = StartServer(addr)
     #Watek kliencki
     Threads = []
-    thread = threading.Thread(target=AcceptConnection, args=(Server,))
-    Threads.append(thread)
-    thread.start()
+    for i in range(5):
+        thread = threading.Thread(target=AcceptConnection, args=(Server,))
+        Threads.append(thread)
+        thread.start()
 
         
        

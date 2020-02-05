@@ -5,24 +5,24 @@ from Server import threading
 #Lista podlaczonych uzyszkodnikow - niby globalna, a nie dziala 
 Users = []
 
-def PrintUsers():
+def PrintUsers(sClientSocket):
+    sClientSocket.send(("====== User list ======\n").encode())
     for user in Users:
-        print(User)
+        sClientSocket.send((user+"\n").encode())
 
 #Tworzy server socket, ktory bedzie akcepptowal polaczenia
 def StartServer(addr):
     ServerSocket = socket.create_server(addr)
     return ServerSocket
 
-
 def ReceiveDataFrom(sClientSocket):
     while True:
         data = sClientSocket.recv(1024).decode()
         print(data)
-        if data == "!":
-            PrintUsers()
+        if data == "!users":
+            PrintUsers(sClientSocket)
 
-#Lista aktualnie podlaczonych numerów
+#Lista aktualnie podłączonych numerów
 def AddConnectedUsers(User):
     Users.append(User) 
 
@@ -30,7 +30,7 @@ def AddConnectedUsers(User):
 def AcceptConnection(sServerSocket):
     ClientConn, ClientAddr = sServerSocket.accept()
     print ("Connected: ", ClientAddr)
-    ClientConn.send(("Welcome to server.".encode()))
+    ClientConn.send(("Welcome to server. Insert commands after '!'".encode()))
     ClientConn.send(("Provide your ID".encode()))
     ClientID = ClientConn.recv(1024).decode()
     print ("Client ID: ", ClientID, " connected.")

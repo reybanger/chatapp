@@ -2,27 +2,38 @@ import socket
 import threading 
 from Server import threading
 
-#Lista podlaczonych uzyszkodnikow - niby globalna, a nie dziala 
+#Global list of users. Tuple (Socket,ID)
 Users = []
 
-def PrintUsers():
+#Sends currently connected users to the server
+#Needs adjustment TODO
+def PrintUsers(sClientSocket):
+    sClientSocket.send(("====== Connected users: ======\n").encode())
     for user in Users:
-        print(User)
+        sClientSocket.send((user[1]+"\n").encode())
 
-#Tworzy server socket, ktory bedzie akcepptowal polaczenia
+#Tworzy server socket, ktory bedzie akceptowal polaczenia
 def StartServer(addr):
     ServerSocket = socket.create_server(addr)
     return ServerSocket
 
+#Message broadcasting
+def BroadcastMessage(strMessage,tClient):
+    for client in Users:
+        if client != tClient:
+            client[0].send((str(tClient[1])+" godo: "+strMessage).encode())
 
-def ReceiveDataFrom(sClientSocket):
+#To prawdopodobnie potrzebuje drugiego socketa jako argument, aby serwer mógł poprawnie robić relay wiadomości
+#Takes tuple - socket, ID
+def ReceiveDataFrom(tClientSocket):
     while True:
-        data = sClientSocket.recv(1024).decode()
+        data = tClientSocket[0].recv(1024).decode()
         print(data)
-        if data == "!":
-            PrintUsers()
+        BroadcastMessage(data,tClientSocket)
+        if data == "!users":
+            PrintUsers(tClientSocket[0])
 
-#Lista aktualnie podlaczonych numerów
+#Lista aktualnie podłączonych numerów. Tuple socket-ID
 def AddConnectedUsers(User):
     Users.append(User) 
 
@@ -30,12 +41,13 @@ def AddConnectedUsers(User):
 def AcceptConnection(sServerSocket):
     ClientConn, ClientAddr = sServerSocket.accept()
     print ("Connected: ", ClientAddr)
-    ClientConn.send(("Welcome to server.".encode()))
+    ClientConn.send(("Welcome to server. Insert commands after '!'".encode()))
     ClientConn.send(("Provide your ID".encode()))
     ClientID = ClientConn.recv(1024).decode()
     print ("Client ID: ", ClientID, " connected.")
-    AddConnectedUsers(ClientID)
-    ReceiveDataFrom(ClientConn)
+    tClient = (ClientConn, ClientID)
+    AddConnectedUsers(tClient)
+    ReceiveDataFrom(tClient)
     return 0
 
 
@@ -50,8 +62,6 @@ def Main():
         Threads.append(thread)
         thread.start()
 
-        
-       
 #Main function init 
 if __name__ == '__main__':
     print("Server version 0.1")

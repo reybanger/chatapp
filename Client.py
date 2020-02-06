@@ -15,6 +15,7 @@ def Messaging_recv(Peer):
 def Main():
     addr = ("", 8080)
     Connection = ConnectToServer(addr)
+
     ReceiveThread = threading.Thread(target=Messaging_recv, args=(Connection,))
     ReceiveThread.start()
     SendThread = threading.Thread(target=Messaging_send, args=(Connection,))

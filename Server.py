@@ -2,27 +2,38 @@ import socket
 import threading 
 from Server import threading
 
-#Lista podlaczonych uzyszkodnikow - niby globalna, a nie dziala 
+#Global list of users. Tuple (Socket,ID)
 Users = []
 
+#Sends currently connected users to the server
+#Needs adjustment TODO
 def PrintUsers(sClientSocket):
-    sClientSocket.send(("====== User list ======\n").encode())
+    sClientSocket.send(("====== Connected users: ======\n").encode())
     for user in Users:
-        sClientSocket.send((user+"\n").encode())
+        sClientSocket.send((user[1]+"\n").encode())
 
-#Tworzy server socket, ktory bedzie akcepptowal polaczenia
+#Tworzy server socket, ktory bedzie akceptowal polaczenia
 def StartServer(addr):
     ServerSocket = socket.create_server(addr)
     return ServerSocket
 
-def ReceiveDataFrom(sClientSocket):
-    while True:
-        data = sClientSocket.recv(1024).decode()
-        print(data)
-        if data == "!users":
-            PrintUsers(sClientSocket)
+#Message broadcasting
+def BroadcastMessage(strMessage,tClient):
+    for client in Users:
+        if client != tClient:
+            client[0].send((str(tClient[1])+" godo: "+strMessage).encode())
 
-#Lista aktualnie podłączonych numerów
+#To prawdopodobnie potrzebuje drugiego socketa jako argument, aby serwer mógł poprawnie robić relay wiadomości
+#Takes tuple - socket, ID
+def ReceiveDataFrom(tClientSocket):
+    while True:
+        data = tClientSocket[0].recv(1024).decode()
+        print(data)
+        BroadcastMessage(data,tClientSocket)
+        if data == "!users":
+            PrintUsers(tClientSocket[0])
+
+#Lista aktualnie podłączonych numerów. Tuple socket-ID
 def AddConnectedUsers(User):
     Users.append(User) 
 
@@ -34,8 +45,9 @@ def AcceptConnection(sServerSocket):
     ClientConn.send(("Provide your ID".encode()))
     ClientID = ClientConn.recv(1024).decode()
     print ("Client ID: ", ClientID, " connected.")
-    AddConnectedUsers(ClientID)
-    ReceiveDataFrom(ClientConn)
+    tClient = (ClientConn, ClientID)
+    AddConnectedUsers(tClient)
+    ReceiveDataFrom(tClient)
     return 0
 
 
@@ -50,8 +62,6 @@ def Main():
         Threads.append(thread)
         thread.start()
 
-        
-       
 #Main function init 
 if __name__ == '__main__':
     print("Server version 0.1")
